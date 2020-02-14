@@ -1,6 +1,9 @@
 const expect = require('expect');
 const yaml = require('js-yaml');
 const fs = require('fs');
+const intercept = require('intercept-stdout');
+const stripAnsiFrom = require('strip-ansi');
+const commandLineValidator = require('../../../../src/cli-validator/runValidator');
 const {
   validate
 } = require('../../../../src/plugins/validation/2and3/semantic-validators/schema-ibm');
@@ -1416,5 +1419,45 @@ describe('validation plugin - semantic - schema-ibm - OpenAPI 3', () => {
     const res = validate({ jsSpec: spec, isOAS3: true }, customConfig);
     expect(res.errors.length).toEqual(0);
     expect(res.warnings.length).toEqual(0);
+  });
+
+  it('should produce a warning for properties with the same name but different type', async function() {
+    // set a variable to store text intercepted from stdout
+    const capturedText = [];
+
+    // this variable intercepts incoming text and pushes it into capturedText
+    const unhookIntercept = intercept(function(txt) {
+      capturedText.push(stripAnsiFrom(txt));
+      return '';
+    });
+
+    // set up mock user input
+    const program = {};
+    program.args = ['./test/cli-validator/mockFiles/duplicateProperties.json'];
+    program.default_mode = true;
+
+    const exitCode = await commandLineValidator(program);
+
+    // this stops the interception of output text
+    unhookIntercept();
+
+    expect(exitCode).toEqual(0);
+    expect(capturedText.length).toEqual(10);
+
+    expect(capturedText[1].trim()).toEqual('warnings');
+    expect(capturedText[2].trim()).toEqual(
+      'Message :   Properties person_prop and person_prop have the same name but different types'
+    );
+    expect(capturedText[3].trim()).toEqual(
+      'Path    :   paths./kid.post.requestBody.content.multipart/form-data.schema.properties.person_prop'
+    );
+    expect(capturedText[4].trim()).toEqual('Line    :   124');
+    expect(capturedText[6].trim()).toEqual(
+      'Message :   Properties name and name have the same name but different types'
+    );
+    expect(capturedText[7].trim()).toEqual(
+      'Path    :   components.schemas.kid.properties.name'
+    );
+    expect(capturedText[8].trim()).toEqual('Line    :   179');
   });
 });

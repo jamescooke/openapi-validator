@@ -19,6 +19,7 @@
 
 const forIn = require('lodash/forIn');
 const includes = require('lodash/includes');
+const has = require('lodash/has');
 const { checkCase, walk } = require('../../../utils');
 const MessageCarrier = require('../../../utils/messageCarrier');
 
@@ -96,6 +97,7 @@ module.exports.validate = function({ jsSpec, isOAS3 }, config) {
     }
   });
 
+  const propDict = {};
   schemas.forEach(({ schema, path }) => {
     generateFormatErrors(schema, path, config, isOAS3, messages);
 
@@ -133,6 +135,8 @@ module.exports.validate = function({ jsSpec, isOAS3 }, config) {
         }
       }
     }
+
+    checkProperties(schema, propDict, path, messages);
   });
 
   return messages;
@@ -410,4 +414,30 @@ function isRootSchema(path) {
   return (
     current === 'schema' || (parent === 'definitions' && path.length === 2)
   );
+}
+
+// Should produce a warning for properties with the same name but different type
+function checkProperties(schema, propDict, path, messages) {
+  if (has(schema, 'properties')) {
+    const { properties } = schema;
+    const entries = Object.entries(properties);
+    for (const [key, value] of entries) {
+      // skips properties that use $ref
+      if (value.type != undefined) {
+        if (propDict.hasOwnProperty(key)) {
+          if (propDict[key] != value.type) {
+            path += `.properties.${key}`;
+            path = path.replace(/,/g, '.');
+            messages.addMessage(
+              path,
+              `Properties ${key} and ${key} have the same name but different types`,
+              'warning'
+            );
+          }
+        } else {
+          propDict[key] = value.type;
+        }
+      }
+    }
+  }
 }

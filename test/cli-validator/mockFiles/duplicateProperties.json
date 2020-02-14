@@ -1,0 +1,195 @@
+ {
+    "openapi":"3.0.0",
+    "info":{
+        "version":"1.0.0",
+        "title":"Duplicate properties",
+        "description":"This is a type related to duplicate keys",
+        "x-alternate-name":"DuplicateProperties",
+        "x-codegen-config" : {
+            "java": {
+                "apiPackage": "com.ibm.watson"
+            }
+        }
+    },
+    "paths":{
+	"/person":{
+	    "get":{
+                "operationId":"list_person",
+                "summary":"Retrieve a Person",
+                "description":"Retrieve a person",
+                "responses":{
+                    "200":{
+                        "description":"Successful request.",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/person"
+                                },
+                                "examples":{
+                                    "response":{
+                                        "value":{
+                                            "text":"Howdy!"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Uh oh."
+                    }
+                }
+            },
+            "post" : {
+                "description": "Post a person.",
+                "summary" : "Post a person",
+                "operationId" : "add_person",
+                "requestBody": {
+                    "required" : "true",
+                    "content" : {
+                        "multipart/form-data" :{
+                            "schema" : {
+                                "type" : "object",
+                                "properties": {
+                                    "person_prop":{
+                                        "type" : "number",
+                                        "description" : "blah blah"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+               "responses":{
+                    "200":{
+                        "description":"Successful request.",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/person"
+                                },
+                                "examples":{
+                                    "response":{
+                                        "value":{
+                                            "text":"Howdy!"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Uh oh."
+                    }
+                }
+            }
+	},
+	"/kid":{
+	    "get":{
+                "operationId":"list_kid",
+                "summary":"Retrieve a kid",
+                "description":"Retrieve a kid",
+                "responses":{
+                    "200":{
+                        "description":"Successful request.",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/kid"
+                                },
+                                "examples":{
+                                    "response":{
+                                        "value":{
+                                            "text":"Howdy!"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                    }
+                }
+            },
+             "post" : {
+                "description": "Post a kid.",
+                "summary" : "Post a kid",
+                "operationId" : "add_kid",
+                "requestBody": {
+                    "required" : "true",
+                    "content" : {
+                        "multipart/form-data" :{
+                            "schema" : {
+                                "type" : "object",
+                                "properties": {
+                                    "person_prop":{
+                                        "type" : "string",
+                                        "format" : "binary",
+                                        "description" : "blah blah"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+               "responses":{
+                    "200":{
+                        "description":"Successful request.",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/person"
+                                },
+                                "examples":{
+                                    "response":{
+                                        "value":{
+                                            "text":"Howdy!"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Uh oh."
+                    }
+                }
+            } 
+	}
+    },
+    "components":{
+        "schemas":{
+            "person":{
+		"description" : "properties",
+                "properties":{
+		    "name":{
+			"description": "A type name",
+			"type": "integer"
+		    },
+		    "age": {
+			"description": "A person's type age",
+			"type": "number",
+			"minimum": 18,
+			"maximum": 64
+		    }
+                }
+            },
+	    "kid":{
+		"description" : "A properties info",
+                "properties":{
+		    "name":{
+			"type": "string",
+                        "description": "A person's id"
+ 		    },
+		    "age": {
+			"description": "A person's age",
+			"type": "number",
+			"minimum": 18,
+			"maximum": 64
+		    }  
+                }
+		
+	    }
+        }
+    }
+}
